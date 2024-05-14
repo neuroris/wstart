@@ -1,45 +1,73 @@
 from pywinauto.application import Application
-import pywinauto
+from pywinauto import findwindows
+import pywinauto, pyautogui
 from selenium.webdriver import Chrome
 from subprocess import Popen
 import time, os, sys
 
 class WookStart:
     def __init__(self):
-        self.taskbar_dlg = None
         self.hanaro_password = 's321321321'
+        self.fail_message = ''
+
         self.start_process()
 
     def start_process(self):
         print('Wook start-up process started.\n')
 
-        # # self.start_pointnix()
-        # # self.start_explorer()
-        self.start_ADT()
+        # processes = findwindows.find_elements()
+        # for process in processes:
+        #     print(f'{process} : {process.process_id}')
+
+        # self.start_ADT()
+        # self.start_explorer()
+        # self.start_hanaro()
+        # self.start_pointnix()
         # self.start_pycharm()
         # self.start_excel()
-        # # self.start_millie()
-        # # self.start_kiwoom()
-        # # self.start_efriend()
-        # self.start_hanaro()
+        # self.start_millie()
         # self.start_chrome()
+        # self.start_kakaotalk()
+        self.start_line()
 
-        print('Start-up whole process done successfully!\n')
+        # self.start_kiwoom()
+        # self.start_efriend()
 
-    def wait_for_app(self, window_title, app_name):
-        taskbar_app = Application(backend='uia')
-        taskbar_app.connect(title='작업 표시줄')
-        self.taskbar_dlg = taskbar_app.window(title='작업 표시줄')
+        print('\nWhole start-up process done successfully!' + self.fail_message)
 
-        dlg = self.taskbar_dlg.window(title_re=window_title)
+    def report_fail(self, message):
+        if self.fail_message:
+            self.fail_message += '\n' + message
+        else:
+            self.fail_message = '\n====== Except ======\n' + message
 
-        for count in range(1, 20):
+    def get_dlg(self, app, window_title):
+        maximum_trial = 20
+        waiting_time = 1
+
+        for count in range(1, maximum_trial):
+            try:
+                app.connect(title_re=window_title)
+                print('{} app is now connected.'.format(window_title))
+                break
+            except:
+                print('{} app is not ready. Waiting {}s...trial({})'.format(window_title, waiting_time, count))
+                time.sleep(waiting_time)
+
+        dlg = app.window(title_re=window_title)
+
+        for count in range(1, maximum_trial):
             if dlg.exists():
-                print('{} is running.'.format(app_name))
+                print('{} dlg is now running.'.format(window_title))
                 return dlg
             else:
-                print('{} is not running. Waiting...trial({})'.format(app_name, count))
-                time.sleep(3)
+                print('{} dlg is not running. Waiting {}s...trial({})'.format(window_title, waiting_time, count))
+                time.sleep(waiting_time)
+
+        print('Getting {} dlg failed!!!'.format(window_title))
+        self.report_fail(window_title)
+
+        return None
 
     def start_hanaro(self):
         print('Hanaro start-up procedure begins')
@@ -78,6 +106,9 @@ class WookStart:
 
     def start_ADT(self):
         print('ADT start-up procedure begins')
+        pyautogui.hotkey('ctrl', 'win', 'left')
+        pyautogui.hotkey('ctrl', 'win', 'left')
+
         app = Application('uia')
         app.start("C:/Program Files/ADT EYE3/EYE3.exe")
 
@@ -95,29 +126,17 @@ class WookStart:
         adt_dlg.click_input(coords=(150, 270), button_up=False)
         adt_dlg.click_input(coords=(400, 275), button_down=False)
 
+        pyautogui.hotkey('ctrl', 'win', 'right')
+
     def start_excel(self):
         print('Excel start-up procedure begins')
-        # taskbar_excel_dlg = self.taskbar_dlg.window(title_re='Excel .*개의 실행 중인 창')
-        # if taskbar_excel_dlg.exists():
-        #     print('Excel is already running')
-        #     return
 
-        try:
-            app = Application('uia')
-            # app.start('C:/Program Files (x86)/Microsoft Office/root/Office16/EXCEL.EXE "d:/개원/경영/0 차오름치과 경영.xlsx"')
-            # Popen(('C:/Program Files (x86)/Microsoft Office/root/Office16/EXCEL.EXE', "d:/개원/경영/차오름치과 경영.xlsx"))
-            Popen(('C:/Program Files/Microsoft Office/root/Office16/EXCEL.EXE', "d:/개원/경영/차오름치과 경영.xlsx"))
-            # time.sleep(12)
-            # app.connect(title_re='.*Excel')
-            # excel_dlg = app.window(title_re='.*Excel')
-            # excel_dlg.maximize()
-            #
-            # if excel_dlg.exists():
-            #     print('it exists')
-            # else:
-            #     print('it does not exists')
-        except Exception as e:
-            print('Excel error', e)
+        app = Application('uia')
+
+        # Popen(('C:/Program Files/Microsoft Office/root/Office16/EXCEL.EXE', "d:/개원/경영/차오름치과 경영.xlsx"))
+        app.start('C:/Program Files/Microsoft Office/root/Office16/EXCEL.EXE "d:/개원/경영/차오름치과 경영.xlsx"')
+        excel_dlg = app.window(title_re='.*Excel')
+        excel_dlg.maximize()
 
     def start_explorer(self):
         print('Explore start-up procedure begins')
@@ -126,30 +145,29 @@ class WookStart:
         Popen(('explorer', 'd:\\'))
 
     def start_pycharm(self):
-        # "C:\Program Files\JetBrains\PyCharm Community Edition 2020.1.2\bin\pycharm64.exe"
+        print('PyCharm start-up procedure begins')
         app = Application('uia')
-        # app.start('"C:\Program Files\JetBrains\PyCharm Community Edition 2020.1.2//bin\pycharm64.exe"')
-        # app.start('"C:\Program Files\JetBrains\PyCharm Community Edition 2021.3.2//bin\pycharm64.exe"')
-        app.start('C:\\Program Files\\JetBrains\\PyCharm Community Edition 2022.1.1\\bin\\pycharm64.exe')
-
-        # taskbar_pycharm_dlg = self.taskbar_dlg.window(title_re='^PyCharm Community Edition.*')
-        # taskbar_pycharm_dlg = self.taskbar_dlg.window(title_re='^PyCharm Community Edition.*')
-        # taskbar_pycharm_dlg.click_input()
+        app.start('C:\\Program Files\\JetBrains\\PyCharm Community Edition 2023.3.5\\bin\\pycharm64.exe')
 
     def start_chrome(self):
         print('Chrome start-up procedure begins')
         app = Application('uia')
-        # app.start('C:/Program Files (x86)/Google/Chrome/Application/chrome.exe')
         app.start('C:/Program Files/Google/Chrome/Application/chrome.exe')
-
+        # app.connect(title_re='새 탭', control_type='Window')
         chrome_dlg = app.top_window()
-        # chrome_dlg.maximize()
+        search_dlg = chrome_dlg.window(title_re='작업 영역')
+        search_dlg.click_input()
 
-        chrome_search_dlg = chrome_dlg.window(title='주소창 및 검색창', control_type='Edit')
-        chrome_search_dlg.type_keys('http://naver.com/')
-        pywinauto.keyboard.send_keys('{ENTER}')
-        chrome_mail_dlg = chrome_dlg.window(title='메일')
-        chrome_mail_dlg.click_input()
+        # chrome_dlg.print_control_identifiers()
+
+        # chrome_dlg = app.top_window()
+        # # chrome_dlg.maximize()
+        #
+        # chrome_search_dlg = chrome_dlg.window(title='주소창 및 검색창', control_type='Edit')
+        # chrome_search_dlg.type_keys('http://naver.com/')
+        # pywinauto.keyboard.send_keys('{ENTER}')
+        # chrome_mail_dlg = chrome_dlg.window(title='메일')
+        # chrome_mail_dlg.click_input()
 
         # try:
         #     chrome_newtag_dlg = chrome_dlg.window(title='새 탭', control_type='Button')
@@ -172,11 +190,47 @@ class WookStart:
         # except Exception as e:
         #     print('Something is wrong when open KEB bank', e)
 
-    def start_kiwoom(self):
-        Popen('C:/KiwoomHero4/Bin/NKStarter.exe')
+    def start_kakaotalk(self):
+        print('KakaoTalk start-up procedure begins.')
+        app = Application('uia')
+        app.start('C:/Program Files (x86)/Kakao/KakaoTalk/KakaoTalk.exe')
+        kakaotalk_dlg = self.get_dlg(app, '카카오톡')
+        if not kakaotalk_dlg: return
+
+        password_dlg = kakaotalk_dlg['Edit2']
+        if password_dlg.exists():
+            password_dlg.type_keys('^a''{DELETE}''{ENTER}')
+        else:
+            self.report_fail('KakaoTalk')
+
+    def start_line(self):
+        print('Line start-up procedure begins.')
+        app = Application('uia')
+        app.start('C:/Users/neuroris/AppData/Local/LINE/bin/LineLauncher.exe')
+        line_dlg = self.get_dlg(app, 'LINE')
+        if not line_dlg: return
+
+        password_dlg = line_dlg['Edit2']
+        if password_dlg.exists():
+            password_dlg.type_keys('^a''{DELETE}''{ENTER}')
+        else:
+            self.report_fail('LINE')
 
     def start_millie(self):
-        Popen('C:/Program Files/millie/millie.exe')
+        print('millie start-up procedure begins')
+        # Popen('C:/Program Files/millie/millie.exe')
+
+        app = Application('uia')
+        app.start('C:/Program Files/millie/millie.exe')
+
+        millie_dlg = app.top_window()
+        study_dlg = millie_dlg.window(title_re='내 서재')
+        time.sleep(4)
+        study_dlg.set_focus()
+        study_dlg.click_input()
+
+    def start_kiwoom(self):
+        Popen('C:/KiwoomHero4/Bin/NKStarter.exe')
 
     def start_efriend(self):
         Popen('C:/eFriend Expert/efriendexpert/efriendexpert.exe')
