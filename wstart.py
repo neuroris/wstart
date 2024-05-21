@@ -22,21 +22,19 @@ class WookStart:
     def start_process(self):
         print('Wook start-up process started.\n')
 
-        self.start_ADT()
-        self.start_explorer()
-        self.start_hanaro()
-        self.start_pointnix()
-        self.start_pycharm()
-        self.start_excel()
-        self.start_millie()
-        self.start_kakaotalk()
-        self.start_line()
+        # self.start_ADT()
+        # self.start_explorer()
+        # self.start_hanaro()
+        # self.start_pointnix()
+        # self.start_pycharm()
+        # self.start_excel()
+        # self.start_millie()
+        # self.start_kakaotalk()
+        # self.start_line()
         self.start_chrome()
 
         # self.start_kiwoom()
         # self.start_efriend()
-
-        # self.selenium()
 
         if self.failed:
             print('\nSome app failed to launch.\n')
@@ -95,6 +93,36 @@ class WookStart:
 
         print('Getting {} dlg failed!!!'.format(window_title))
         self.report_failure(window_title)
+
+        return None
+
+    def get_dlg_title(self, parent_dlg, window_title):
+        maximum_trial = 10
+        waiting_time = 1
+
+        dlg = parent_dlg.window(title=window_title)
+        for count in range(1, maximum_trial):
+            if dlg.exists():
+                print('{} dlg is now active.'.format(window_title))
+                return dlg
+            else:
+                print('{} dlg is not active. Waiting {}s...trial({})'.format(window_title, waiting_time, count))
+                time.sleep(waiting_time)
+
+        print('Getting {} dlg failed!!!'.format(window_title))
+        self.report_failure(window_title)
+
+        return None
+
+    def wait_dlg(self, dlg):
+        maximum_trial = 10
+        waiting_time = 1
+        for count in range(1, maximum_trial):
+            if dlg.exists():
+                return dlg
+            else:
+                time.sleep(waiting_time)
+        print('Getting dlg failed!!!')
 
         return None
 
@@ -260,41 +288,27 @@ class WookStart:
             app.start('C:/Program Files/Google/Chrome/Application/chrome.exe')
             chrome_dlg = self.get_top_dlg(app, '새 탭')
             search_dlg = chrome_dlg['Edit']
-            search_dlg.type_keys('https://naver.com''{ENTER}')
-            time.sleep(2)
-            chrome_dlg.print_control_identifiers()
 
-            # chrome_dlg.print_control_identifiers()
+            search_dlg.type_keys('https://mail.naver.com/v2/folders/0/all''{ENTER}')
+            # # search_dlg.type_keys('https://naver.com''{ENTER}')
+            # # naver_dlg = self.get_top_dlg(app, 'NAVER')
+            # # naver_mail_dlg = self.get_dlg_title(naver_dlg, '메일')
+            # # naver_mail_dlg.click_input()
 
-            # chrome_dlg = app.top_window()
-            # # chrome_dlg.maximize()
-            #
-            # chrome_search_dlg = chrome_dlg.window(title='주소창 및 검색창', control_type='Edit')
-            # chrome_search_dlg.type_keys('http://naver.com/')
-            # pywinauto.keyboard.send_keys('{ENTER}')
-            # chrome_mail_dlg = chrome_dlg.window(title='메일')
-            # chrome_mail_dlg.click_input()
+            pyautogui.hotkey('ctrl', 't')
+            search_dlg.type_keys('https://kebhana.com''{ENTER}')
+            hana_dlg = self.get_top_dlg(app, '하나은행')
+            hana_check_dlg = hana_dlg['조회2']
+            hana_check_dlg.click_input()
+            hana_cert_dlg = hana_dlg['공동인증서 로그인(구 공인인증서)']
+            self.wait_dlg(hana_cert_dlg)
+            hana_cert_dlg.click_input()
 
-            # try:
+            pyautogui.hotkey('ctrl', 't')
+            search_dlg.type_keys('https://remotedesktop.google.com''{ENTER}')
+
             #     chrome_newtag_dlg = chrome_dlg.window(title='새 탭', control_type='Button')
             #     chrome_newtag_dlg.click_input()
-            #     chrome_search_dlg.type_keys('https://kebhana.com')
-            #     pywinauto.keyboard.send_keys('{ENTER}')
-            #     # # chrome_inquiry_dlg = chrome_dlg.window(title='조회')
-            #     # # chrome_inquiry_dlg.click_input()
-            #     # # chrome_total_inquiry_dlg = chrome_dlg.window(title='전체계좌조회')
-            #     # # chrome_total_inquiry_dlg.click_input()
-            #
-            #     chrome_newtag_dlg.click_input()
-            #     chrome_search_dlg.type_keys('https://remotedesktop.google.com')
-            #     pywinauto.keyboard.send_keys('{ENTER}')
-            #
-            #     chrome_newtag_dlg.click_input()
-            #     chrome_search_dlg.type_keys('https://remotedesktop.google.com')
-            #     pywinauto.keyboard.send_keys('{ENTER}')
-
-            # except Exception as e:
-            #     print('Something is wrong when open KEB bank', e)
         except Exception as e:
             self.report_failure('Chrome', e)
 
