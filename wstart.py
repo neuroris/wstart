@@ -22,15 +22,15 @@ class WookStart:
     def start_process(self):
         print('Wook start-up process started.\n')
 
-        # self.start_ADT()
-        # self.start_explorer()
-        # self.start_hanaro()
-        # self.start_pointnix()
-        # self.start_pycharm()
-        # self.start_excel()
-        # self.start_millie()
-        # self.start_kakaotalk()
-        # self.start_line()
+        self.start_ADT()
+        self.start_explorer()
+        self.start_hanaro()
+        self.start_pointnix()
+        self.start_pycharm()
+        self.start_excel()
+        self.start_millie()
+        self.start_kakaotalk()
+        self.start_line()
         self.start_chrome()
 
         # self.start_kiwoom()
@@ -321,6 +321,8 @@ class WookStart:
             password_dlg = kakaotalk_dlg['Edit2']
             typing_message = '^a''{DELETE}' + self.message_password + '{ENTER}'
             password_dlg.type_keys(typing_message)
+            self.wait_dlg(kakaotalk_dlg)
+            kakaotalk_dlg.minimize()
         except Exception as e:
             self.report_failure('KakaoTalk', e)
 
@@ -333,6 +335,8 @@ class WookStart:
             password_dlg = line_dlg['Edit2']
             typing_message = '^a''{DELETE}' + self.message_password + '{ENTER}'
             password_dlg.type_keys(typing_message)
+            self.wait_dlg(line_dlg)
+            line_dlg.minimize()
         except Exception as e:
             self.report_failure('LINE', e)
 
